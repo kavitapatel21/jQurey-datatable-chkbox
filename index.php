@@ -13,14 +13,88 @@
 <table id="my-example">
     <thead>
         <tr>
+		<th width="10%"><input type="checkbox" class='checkall' id='checkall'><input type="button" id='delete_record' value='Delete' ></th>
         <th>Id</th>
         <th>Fullname</th>
         <th>Email</th>
         <th>Contact No</th>
-        <th>Check All <input type="checkbox" class='checkall' id='checkall'><input type="button" id='delete_record' value='Delete' ></th>
+		<th>Action</th>
         </tr>
     </thead>
 </table>
+<div class='container'>
+
+<!-- Modal -->
+<div id="updateModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Update data</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="name" >Name</label>
+                    <input type="text" class="form-control" id="name" name="name" placeholder="Enter name" required>            
+                </div>
+                <div class="form-group">
+                    <label for="email" >Email</label>    
+                    <input type="email" class="form-control" id="email" name="email"  placeholder="Enter email">                          
+                </div>      
+              
+                <div class="form-group">
+                    <label for="contactno" >Contact No</label>    
+                    <input type="text" class="form-control" id="contactno" name="contactno"  placeholder="Enter contactno">                          
+                </div>
+                
+            </div>
+            <div class="modal-footer">
+                <input type="hidden" id="txt_userid" value="0">
+                <button type="button" class="btn btn-success btn-sm" id="btn_save">Save</button>
+                <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="mupdateModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Add data</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="mname" >Name</label>
+                    <input type="text" class="form-control" id="mname" name="mname" placeholder="Enter name" required>            
+                </div>
+                <div class="form-group">
+                    <label for="memail" >Email</label>    
+                    <input type="email" class="form-control" id="memail" name="memail"  placeholder="Enter email">                          
+                </div>      
+              
+                <div class="form-group">
+                    <label for="mcontactno" >Contact No</label>    
+                    <input type="text" class="form-control" id="mcontactno" name="mcontactno">                          
+                </div>
+                
+            </div>
+            <div class="modal-footer">
+                <input type="hidden" id="mtxt_userid" value="0">
+                <button type="button" class="btn btn-success btn-sm" id="mbtn_save">Save</button>
+                <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>
 </body>
 <script type="text/javascript">
  $(document).ready(function() {
@@ -30,11 +104,14 @@
         "bProcessing": true,
         "sAjaxSource": "ajax.php",
         "aoColumns": [
+			  { mData: 'action' },
               { mData: 'id' } ,
               { mData: 'name' },
               { mData: 'email' },
               { mData: 'contactno' },
-              { mData: 'action' },
+			  { mData: 'trash' },
+		
+              
             ]
       });  
 
@@ -74,6 +151,105 @@ if(deleteids_arr.length > 0){
 }
 });
 
+	//Delete row
+	$('#my-example').on('click','.deleteUser',function(){
+ var id = $(this).data('id');
+            var ele = $(this).parent().parent();  
+            // AJAX request
+            
+            $.ajax({
+              url: 'deleterow.php',
+              type: 'post',
+              data: {id: id}, 
+              success: function() {
+                ele.fadeOut().remove();	
+                userDataTable.ajax.reload();
+                
+                        },
+            });
+
+});
+
+//Update data
+$('#my-example').on('click','.updateuser',function(){
+      $('#updateModal').modal('show');  
+      var id = $(this).data('id');
+
+                $('#txt_userid').val(id);
+
+                // AJAX request
+                $.ajax({
+                    url: 'update.php',
+                    type: 'post',
+                    data: {id: id},
+                    dataType: 'json',
+                    success: function(response){
+                        if(response.status == 1){
+
+                            $('#name').val(response.data.name);
+                            $('#email').val(response.data.email);
+                            $('#contactno').val(response.data.contactno);
+
+                        }else{
+                            alert("Invalid ID.");
+                        }
+                    }
+                });    
+    });
+ // Save user 
+ $('#btn_save').click(function(){
+                var id = $('#txt_userid').val();
+
+                var name = $('#name').val().trim();
+                var email = $('#email').val().trim();
+                var contactno = $('#contactno').val().trim();
+                
+
+                    // AJAX request
+                    $.ajax({
+                        url: 'updatedata.php',
+                        type: 'post',
+                        data: {id: id,name: name, email: email, contactno: contactno},
+                        //dataType: 'json',
+                        success: function(){
+                           //alert('call');
+                          // console.log(data)
+                                // Empty the fields
+                                $('#name','#email','#contactno').val('');
+                                $('#txt_userid').val(0);
+                                $('#updateModal').modal('hide');
+                                  userDataTable.ajax.reload();   
+                        }
+                    });
+
+                
+            });
+
+
+	 //Insert data form popup
+    $('#my-example').on('click','.insertUser',function(){
+      $('#mupdateModal').modal('show');      
+    });
+    //Insert data
+    $("#mupdateModal").on('click','#mbtn_save', function(){
+      var name = $('#mname').val().trim();
+      var email = $('#memail').val().trim();
+      var contactno = $('#mcontactno').val().trim();
+            $.ajax({
+              url: 'insert.php',
+              type: 'post',
+              data: {name: name, email: email, contactno: contactno}, 
+              success: function(){
+               $('#mname','#memail','#mcontactno').val('');
+                                $('#mtxt_userid').val(0);
+                                $('#mupdateModal').modal('hide');
+                                  userDataTable.ajax.reload(); 
+              }    
+    });
   });
+     
+
+  });
+  
       </script>
 </html>
