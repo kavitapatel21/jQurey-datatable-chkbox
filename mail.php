@@ -5,10 +5,10 @@
       $dbname = "chkex"; /* Database name */
       
 $conn = mysqli_connect($host, $user, $password,$dbname);
-$name=$_POST['name'];
-$email=$_POST['email'];
-$contactno=$_POST['contactno'];
-//echo $name;
+
+$email=$_POST['memail'];
+
+//echo $email;
 $sql="select * from chkdata where ( email='$email');";
 
       $res=mysqli_query($conn,$sql);
@@ -18,13 +18,10 @@ $sql="select * from chkdata where ( email='$email');";
         $row = mysqli_fetch_assoc($res);
         if($email==isset($row['email']))
         {
-                echo '<script>alert("email already exist")</script>';
+                echo 'false';
         }
       }
       else{
-$sql = "INSERT INTO chkdata (name,email,contactno,flag)
-VALUES ('".$name."', '".$email."', '".$contactno."','1')";
-$result = $conn->query($sql);
-exit();
+                echo 'true';
       }
 ?>

@@ -7,6 +7,7 @@
    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
    <script type="text/javascript" charset="utf8" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+   <script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.js"></script>
   </head>
 
 <body>
@@ -27,6 +28,7 @@
 <!-- Modal -->
 <div id="updateModal" class="modal fade" role="dialog">
     <div class="modal-dialog">
+    <form method="post" id="employeForm" name="employeForm">
 
         <!-- Modal content-->
         <div class="modal-content">
@@ -41,7 +43,8 @@
                 </div>
                 <div class="form-group">
                     <label for="email" >Email</label>    
-                    <input type="email" class="form-control" id="email" name="email"  placeholder="Enter email">                          
+                    <input type="email" class="form-control" id="email" name="email"  placeholder="Enter email">  
+                    <span></span>                        
                 </div>      
               
                 <div class="form-group">
@@ -56,14 +59,14 @@
                 <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Close</button>
             </div>
         </div>
-
+</form>
     </div>
 </div>
 
 <!-- Modal -->
 <div id="mupdateModal" class="modal fade" role="dialog">
     <div class="modal-dialog">
-
+    <form method="post" id="employeeForm" name="employeeForm">
         <!-- Modal content-->
         <div class="modal-content">
             <div class="modal-header">
@@ -77,12 +80,13 @@
                 </div>
                 <div class="form-group">
                     <label for="memail" >Email</label>    
-                    <input type="email" class="form-control" id="memail" name="memail"  placeholder="Enter email">                          
+                    <input type="email" class="form-control" id="memail" name="memail"  placeholder="Enter email"> 
+                    <span><span>                         
                 </div>      
               
                 <div class="form-group">
                     <label for="mcontactno" >Contact No</label>    
-                    <input type="text" class="form-control" id="mcontactno" name="mcontactno">                          
+                    <input type="text" class="form-control" id="mcontactno" name="mcontactno" placeholder="Enter contactno">                          
                 </div>
                 
             </div>
@@ -92,7 +96,7 @@
                 <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Close</button>
             </div>
         </div>
-
+        </form>
     </div>
 </div>
 </body>
@@ -196,8 +200,43 @@ $('#my-example').on('click','.updateuser',function(){
                     }
                 });    
     });
+    $("#employeForm").validate({
+        rules: {
+            name: {
+required: true
+},
+email: {
+required: true,
+email: true,
+remote: {
+            url: 'check-email.php',
+            type: "post",
+        }
+},
+contactno: {
+required: true,
+minlength: 10,
+maxlength: 10,
+number: true
+},
+},
+messages: {
+    name: 'Please enter Name.',
+    email: {
+          required: 'Please enter Email Address.',
+          email: 'Please enter a valid Email Address.',
+          remote: "email is already exist."
+        },
+        contactno: {
+          required: 'Please enter Contact.',
+          rangelength: 'Contact should be 10 digit number.'
+        },
+      },
+});
  // Save user 
  $('#btn_save').click(function(){
+    var form =  $("#employeForm");
+    if (form.valid()) {
                 var id = $('#txt_userid').val();
 
                 var name = $('#name').val().trim();
@@ -221,17 +260,47 @@ $('#my-example').on('click','.updateuser',function(){
                                   userDataTable.ajax.reload();   
                         }
                     });
-
+                }
                 
             });
 
-
-	 //Insert data form popup
-    $('#my-example').on('click','.insertUser',function(){
-      $('#mupdateModal').modal('show');      
-    });
-    //Insert data
+      //Insert data
+      $("#employeeForm").validate({
+        rules: {
+            mname: {
+required: true
+},
+memail: {
+required: true,
+email: true,
+remote: {
+            url: 'mail.php',
+            type: "post",
+        }
+},
+mcontactno: {
+required: true,
+minlength: 10,
+maxlength: 10,
+number: true
+},
+},
+messages: {
+    mname: 'Please enter Name.',
+    memail: {
+          required: 'Please enter Email Address.',
+          email: 'Please enter a valid Email Address.',
+          remote: "email is already exist."
+        },
+        mcontactno: {
+          required: 'Please enter Contact.',
+          rangelength: 'Contact should be 10 digit number.'
+        },
+      },
+});
     $("#mupdateModal").on('click','#mbtn_save', function(){
+        var form =  $("#employeeForm");
+    if (form.valid()) {
       var name = $('#mname').val().trim();
       var email = $('#memail').val().trim();
       var contactno = $('#mcontactno').val().trim();
@@ -246,6 +315,7 @@ $('#my-example').on('click','.updateuser',function(){
                                   userDataTable.ajax.reload(); 
               }    
     });
+}
   });
      
 

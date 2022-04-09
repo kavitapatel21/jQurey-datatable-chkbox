@@ -7,20 +7,28 @@ $dbname = "chkex"; /* Database name */
 $conn = mysqli_connect($host, $user, $password,$dbname);
 $id = 0;
 //echo $id;
-$name = mysqli_escape_string($conn,$_POST['name']);
-$email = mysqli_escape_string($conn,$_POST['email']);
-$contactno = mysqli_escape_string($conn,$_POST['contactno']);
-//echo $name;
-//echo $email;
-//echo $contactno;
 
+$email = mysqli_escape_string($conn,$_POST['email']);
+
+
+//echo $email;
  if(isset($_POST['id'])){
      $id = mysqli_escape_string($conn,$_POST['id']);
  }
- 
+ $sql="select * from chkdata where ( email='$email');";
 
-    $query= mysqli_query($conn,"UPDATE chkdata SET name='".$name."',email='".$email."',contactno='".$contactno."' WHERE id=".$id);
-     $result = $conn->query($query);
-     exit();
- 
+ $res=mysqli_query($conn,$sql);
+
+ if (mysqli_num_rows($res) > 0) {
+   
+   $row = mysqli_fetch_assoc($res);
+   if($email==isset($row['email']))
+   {
+          echo "false";
+   }
+ }
+ else{
+
+   echo "true";
+ }
      ?>
