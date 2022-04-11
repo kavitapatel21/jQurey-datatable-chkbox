@@ -1,15 +1,10 @@
 <?php
-      $host = "localhost"; /* Host name */
-      $user = "root"; /* User */
-      $password = ""; /* Password */
-      $dbname = "chkex"; /* Database name */
-      
-$conn = mysqli_connect($host, $user, $password,$dbname);
+require('config.php');
 $name=$_POST['name'];
 $email=$_POST['email'];
 $contactno=$_POST['contactno'];
 //echo $name;
-$sql="select * from chkdata where ( email='$email');";
+$sql="select * from chkdata where ( email='$email' AND flag='1');";
 
       $res=mysqli_query($conn,$sql);
 

@@ -4,17 +4,41 @@
    <title>PHP - Jquery Datatables Example with checkbox</title>
    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
    <link rel="stylesheet" type="text/css" href="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/css/jquery.dataTables.css">
+   
+  
    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
    <script type="text/javascript" charset="utf8" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
    <script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.js"></script>
+   
+  
+ 
   </head>
 
 <body>
 <table id="my-example">
+<div class="container">
+   <form id="upload_csv" method="post" enctype="multipart/form-data">
+   <tr>
+     <label>Add More Data</label>&nbsp        
+                <input type="file" name="csv_file" id="csv_file" accept=".csv" style="margin-top:5px;" />
+                <input type="submit" name="upload" id="upload" value="Import" style="margin-top:10px;" class="btn btn-info" />&nbsp
+                <button type="button" class="btn btn-info" id="export" style="margin-top:10px;">Export</button>&nbsp
+                <a href="javascript:void(0)" id="dlbtn" style="display: none;">
+    <button type="button" id="mine">Export</button>
+</a>
+</form>
+<button class='btn btn-info insertUser' data-toggle='modal' data-target='#mupdateModal' style="margin-top:10px;" >Add</button>
+                </tr>
+               
+                <div style="clear:both"></div>
+  
+</div>
     <thead>
         <tr>
-		<th width="10%"><input type="checkbox" class='checkall' id='checkall'><input type="button" id='delete_record' value='Delete' ></th>
+		<th width="10%">
+            <input type="checkbox" class='checkall' id='checkall'><input type="button" id='delete_record' value='Delete' >
+        </th>
         <th>Id</th>
         <th>Fullname</th>
         <th>Email</th>
@@ -113,10 +137,13 @@
               { mData: 'name' },
               { mData: 'email' },
               { mData: 'contactno' },
-			  { mData: 'trash' },
-		
-              
-            ]
+			  { mData: 'trash' },    
+            ],
+            dom: 'lBfrtip',
+   buttons: [
+            'csv', 
+             ],
+   "lengthMenu": [ [10, 25, 50, -1], [10, 25, 50, "All"] ]
       });  
 
       // Check all 
@@ -317,7 +344,60 @@ messages: {
     });
 }
   });
+
+  //import CSV File
+  $('#upload_csv').on('submit', function(event){
+  event.preventDefault();
+  $.ajax({  
+                     url:"import.php",  
+                     method:"POST",  
+                     data:new FormData(this),  
+                     contentType:false,          // The content type used when sending data to the server.  
+                     cache:false,                // To unable request pages to be cached  
+                     processData:false,          // To send DOMDocument or non processed data file it is set to false  
+                     success: function(data){  
+                          if(data=='Error1')  
+                          {  
+                               alert("Invalid File");  
+                          }  
+                          else if(data == "Error2")  
+                          {  
+                               alert("Please Select File");  
+                          }                           
+                          else if(data == "Success")  
+                          {  
+                               alert("CSV file data has been imported");  
+                               $('#upload_csv')[0].reset();
+                               userDataTable.ajax.reload(); 
+
+                          }  
+                          else  
+                          {  
+                              $('#my-example').html(data);  
+                          }  
+                     }  
+                })  
+ });
      
+ //Export CSV
+ $("#export").click(function(){
+	var csv = "csv";
+	$.ajax({
+		type: 'POST',
+		url: 'exportdata.php',
+		data: {csv:csv},
+	    success: function(result) {
+	      console.log(result);
+	      setTimeout(function() {
+				  var dlbtn = document.getElementById("dlbtn");
+				  var file = new Blob([result], {type: 'text/csv'});
+				  dlbtn.href = URL.createObjectURL(file);
+				  dlbtn.download = 'myfile.csv';
+				  $( "#mine").click();
+				}, 2000);
+	    }
+	});
+});
 
   });
   

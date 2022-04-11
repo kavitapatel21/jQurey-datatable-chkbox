@@ -1,10 +1,5 @@
 <?php
-$host = "localhost"; /* Host name */
-$user = "root"; /* User */
-$password = ""; /* Password */
-$dbname = "chkex"; /* Database name */
-
-$conn = mysqli_connect($host, $user, $password,$dbname);
+require('config.php');
 $id = 0;
 
 if(isset($_POST['id'])){
