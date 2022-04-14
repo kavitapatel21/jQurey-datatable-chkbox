@@ -235,10 +235,6 @@ required: true
 email: {
 required: true,
 email: true,
-remote: {
-            url: 'check-email.php',
-            type: "post",
-        }
 },
 contactno: {
 required: true,
@@ -252,7 +248,7 @@ messages: {
     email: {
           required: 'Please enter Email Address.',
           email: 'Please enter a valid Email Address.',
-          remote: "email is already exist."
+          
         },
         contactno: {
           required: 'Please enter Contact.',

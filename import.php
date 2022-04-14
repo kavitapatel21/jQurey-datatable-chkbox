@@ -41,7 +41,7 @@ if(!empty($_FILES["csv_file"]["name"]))
                // echo "hi";
                //echo $name;
                 // If user already exists in the database with the same email
-                $query = "SELECT id FROM chkdata WHERE email = '" . $getData[2] . "'";
+                $query = "SELECT id FROM chkdata WHERE email = '" . $getData[2] . "' AND flag='1'";
                 $check = mysqli_query($conn, $query);
                 if ($check->num_rows > 0)
                 {
